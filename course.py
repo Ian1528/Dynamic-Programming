@@ -2,29 +2,6 @@ import math
 import random
 import numpy as np
 from params import *
-# class Block:
-#     def __init__(self, name: str, sections: list["Section"] = None):
-#         """
-#         Initializes a Block object.
-#         """
-#         self.name = name
-#         self.sections: list[Section] = sections if sections is not None else []
-
-#     def get_all_sections(self) -> list["Section"]:
-#         """
-#         Returns a list of all sections in the block.
-#         """
-#         return self.sections
-    
-#     def get_num_sections_excluding_subject(self, subject_prefix: str) -> int:
-#         """
-#         Returns the number of sections in the block excluding the subject prefix.
-#         """
-#         return len([section for section in self.sections if not section.name.startswith(subject_prefix)])
-    
-#     def __str__(self):
-#         return f"{self.name} block has {len(self.sections)} classes"
-    
 
 class Course:
     # name: string indicating the name of the course. "ENG10", "MAT10", etc
@@ -485,14 +462,6 @@ class Teacher:
         return len(self.teaching_blocks) >= MAX_CLASSES_PER_TEACHER
 
     def find_best_block_for_course(self, course: Course, block_sections: dict[int, list[Section]]) -> int:
-        """Finds the best block for a course based on the number of sections and teacher availability.
-        
-        Args:
-            course (Course): The course to find the best block for.
-        
-        Returns:
-            int: the best block
-        """
         """Finds the best block for a course based on the number of sections and teacher availability.
         
         Args:
