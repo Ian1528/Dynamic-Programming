@@ -268,31 +268,35 @@ class Student:
         """
         return [course for course in self.get_all_first_choice_courses() if course.name not in [section.name for section in self.schedule.values() if section is not None]]
     
-    def get_available_sections_with_saturation(self, course: Course) -> dict[Section, int]:
+        
+    def get_available_sections_with_saturation(self, current_course: Course, current_section: Section | None = None) -> dict[Section, int]:
         """
         Returns a list of all sections for a course that the student can be assigned to.
         """
         available_sections: list[Section] = []
-        for section in course.sections:
+        for section in current_course.sections:
             if self.schedule[section.block] is None:
                 available_sections.append(section)
+        if current_section is not None:
+            available_sections.append(current_section)
 
-        blocks_to_sections = {section.block: section for section in available_sections}
         sections_saturations = {section: 1 for section in available_sections}
-        available_sections_blocks: list[int] = [section.block for section in available_sections]
+        available_sections_blocks: set[int] = set([section.block for section in available_sections])
         for course in self.get_unassigned_courses():
+            if course == current_course:
+                continue
             for section in course.get_unfilled_sections():
                 if section.block in available_sections_blocks and not section.is_full():
-                    corresponding_section = blocks_to_sections[section.block]
-                    sections_saturations[corresponding_section] += 1
+                    corresponding_sections_to_block = [s for s in available_sections if s.block == section.block]
+
+                    for s in corresponding_sections_to_block:
+                        sections_saturations[s] += 1
         
-        # normalize the saturations 
+        # normalize the saturation weights
         saturation_weights = np.array(list(sections_saturations.values()))
 
-        if np.sum(saturation_weights) == 0:
-            saturation_weights = np.ones(len(sections_saturations))/ len(sections_saturations)
-        else:
-            saturation_weights = saturation_weights / np.sum(saturation_weights)
+        saturation_weights = saturation_weights / np.sum(saturation_weights)
+
         sections_saturations = {section: int(saturation_weights[i]*100) for i, section in enumerate(sections_saturations.keys())}
         
         return sections_saturations
